@@ -17,8 +17,8 @@ DF_REGISTRO = pd.DataFrame(columns=['Fecha','Rutina','Tiempo'])
 # Estructuras de datos
 grupos = set()
 
-def trabajo_pd(DF_GRUPO,DF_IDENTIFICADOR_RUTINA):
-    #GRUPO
+def trabajo_pd(DF_GRUPO,DF_IDENTIFICADOR_RUTINA,DF_EJERCICIO):
+    #DF_GRUPO
     grupos = set(DF_INFORMACION_EJERCICIOS.loc[0].tolist())
     grupos = {x for x in grupos if not isinstance(x, float)}
     grupos.remove('Biceps - Triceps')
@@ -41,6 +41,24 @@ def trabajo_pd(DF_GRUPO,DF_IDENTIFICADOR_RUTINA):
     for element in rutinas_list:
         DF_IDENTIFICADOR_RUTINA = DF_IDENTIFICADOR_RUTINA._append(element, ignore_index=True)
 
-    print(DF_IDENTIFICADOR_RUTINA)
+    #DF_EJERCICIO
+    ejercicio_list = []
+    for id in range(len(DF_INFORMACION_EJERCICIOS)):
+        ejercicio = DF_INFORMACION_EJERCICIOS.loc[id,'Ejercicios']
+        if isinstance(ejercicio,str):
+            ejercicio_dict = dict()
+            ejercicio_dict['Nombre'] = ejercicio
+            ejercicio_dict['Nivel'] = DF_INFORMACION_EJERCICIOS.loc[id,'Nivel']
+            ejercicio_dict['Pagina'] = DF_INFORMACION_EJERCICIOS.loc[id,'Página']
+            ejercicio_dict['Repeticiones'] = 0
+            ejercicio_dict['Equipo'] = DF_INFORMACION_EJERCICIOS.loc[id,'Equipo']
+            ejercicio_dict['Peso'] = 0
+            ejercicio_dict['Tiempo'] = 0
+            ejercicio_dict['Frecuencia'] = 0
+            ejercicio_list.append(ejercicio_dict)
+    for element in ejercicio_list:
+        DF_EJERCICIO = DF_EJERCICIO._append(element,ignore_index=True)
+    
+    print(DF_EJERCICIO)
 
-trabajo_pd(DF_GRUPO,DF_IDENTIFICADOR_RUTINA)
+trabajo_pd(DF_GRUPO,DF_IDENTIFICADOR_RUTINA,DF_EJERCICIO)
