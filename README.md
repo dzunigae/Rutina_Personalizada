@@ -1,1 +1,0 @@
-2. Diseñar la base de datos indicada con esta información.  
