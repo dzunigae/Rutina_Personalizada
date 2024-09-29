@@ -7,23 +7,25 @@ generar un número aleatorio sobre la suma. Dependiendo de donde caiga, así mis
 
 
 1. Verificación de que tipo de rutina toca hoy (Tronco superior o inferior - El sistema es dos rutinas de tren 
-superior y una de treninferior)
-2.Se filtra a los grupos musculares que menos ejercicio hayan hecho y se escoge aquella rutina que agrupe la mayor 
-cantidad de ellos, si hay varias rutinas empatadas, se escoge a aquella que hay sido hecha menos veces, si aún así siguen empatados, se escoge al azar.
-3. Se verifica el número de grupos musculares de la rutina
-4. Caso 1: Son dos grupos musculares
-	5. Se filtra los músculos de cada grupo
-	6. Se ordenan los músculos de tal forma que primero estén aquellos que menos hayan sido ejercitados (Esto se 
+superior y una de tren inferior), la sesión de tren inferior se dará en cada sesión múltiplo de 3.
+2. Se escoje la rutina que menos se haya hecho hasta el momento, en caso de haber empate, se hace al azar.
+3.Se filtra a los grupos musculares que menos ejercicio hayan hecho y se escoge aquella rutina que agrupe la mayor 
+cantidad de ellos, si hay varias rutinas empatadas, se escoge a aquella que hay sido hecha menos veces, si aún así 
+siguen empatados, se escoge al azar.
+4. Se verifica el número de grupos musculares de la rutina
+5. Caso 1: Son dos grupos musculares
+	6. Se filtra los músculos de cada grupo
+	7. Se ordenan los músculos de tal forma que primero estén aquellos que menos hayan sido ejercitados (Esto se 
 	hace para los dos grupos musculares)
-	7. Se escoge la dificultad de cada uno de los 4 ejercicios teniendo en cuenta la función de probabilidad 
+	8. Se escoge la dificultad de cada uno de los 4 ejercicios teniendo en cuenta la función de probabilidad 
 	(2 ejercicios para el primero grupo y los otros 2 para el segundo) 
-	8. Para cada ejercicio correspondiente a la lista de músculos actual:
-		9. Se filtran los ejercicios que estén en la dificultad indicada y que ejerciten alguno de los músculos de 
+	9. Para cada ejercicio correspondiente a la lista de músculos actual:
+		10. Se filtran los ejercicios que estén en la dificultad indicada y que ejerciten alguno de los músculos de 
 		la lista (Obviamente un sólo ejercicio puede trabajar varios músculos de la lista).
-		10. Se ordenan los ejercicios de acuerdo al valor de la suma de los números de veces que se han ejercitado 		los músculos que trabaja (Sin importar que pertenezcan a o no a la lista que se está trabajando) y se escoje 		aquel con el puntaje más bajo. Si hay empate, se priorizará a aquel que ejercite más músculos de la lista y 		que tenga menos de otros grupos musculares.
+		11. Se ordenan los ejercicios de acuerdo al valor de la suma de los números de veces que se han ejercitado 		los músculos que trabaja (Sin importar que pertenezcan a o no a la lista que se está trabajando) y se escoje 		aquel con el puntaje más bajo. Si hay empate, se priorizará a aquel que ejercite más músculos de la lista y 		que tenga menos de otros grupos musculares.
 		Nota: Recordar que no se pueden repetir ejercicios en la misma sesión.
-11. Caso 2: Son 3 grupos musculares
-	12. El procedimiento es el mismo que para el caso 1, sólo que la selección del cuarto ejercicio se realiza 
+12. Caso 2: Son 3 grupos musculares
+	13. El procedimiento es el mismo que para el caso 1, sólo que la selección del cuarto ejercicio se realiza 
 	entre los 	ejercicios de todos los 3 grupos.
-13. Finalmente, y antes de realizar el reporte, se actualizan todas las variables necesarias para la siguiente 
+14. Finalmente, y antes de realizar el reporte, se actualizan todas las variables necesarias para la siguiente 
 ocasión
