@@ -1,4 +1,5 @@
 import pandas as pd
+import random
 
 #Variables
 rutinas = {
@@ -23,8 +24,11 @@ sesion = df.loc[0,'Sesion']
 
 if (sesion+3) % 3 == 0: #Rutina tren inferior
     #2. Se escoje la rutina que menos se haya hecho hasta el momento, en caso de haber empate, se hace al azar.
-    frecuencia_rutinas = df.loc[0,list(rutinas.keys())]
-    print(frecuencia_rutinas)
+    frecuencia_rutinas = df.loc[0,['I','J']].to_dict()
+    menor_valor = min(frecuencia_rutinas.values())
+    claves_menor_valor = [clave for clave, valor in frecuencia_rutinas.items() if valor == menor_valor]
+    rutina = random.choice(claves_menor_valor)
+    print(rutina)
 
     #grupos_musculares = ['Piernas', 'Gluteos', 'Pantorrillas', 'Abdomen']
     #frecuencia_grupos_musculares = df.loc[0,grupos_musculares].to_dict()
