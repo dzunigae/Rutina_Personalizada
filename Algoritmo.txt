@@ -5,9 +5,97 @@ suma 1, por cada rutina donde hayan ejercicios intermedios, el valor de los ejer
 La probabilidad de esta función se saca asignándole un rango a cada uno de los grupos, luego sumar sus valores y 
 generar un número aleatorio sobre la suma. Dependiendo de donde caiga, así mismo, la dificultad del ejercicio.
 
+# DEFINICIÓN DE OBJETOS
 
-1. Verificación de que tipo de rutina toca hoy (Tronco superior o inferior - El sistema es dos rutinas de tren 
+1. Definir objeto ejercicio: 
+	Atributos: Nombre, Nivel, Equipo, Página, Cantidad de veces que se ha realizado (Frecuencia)
+
+2. Definir objeto musculo:
+	Atributos: Nombre, Lista de ejercicios que lo trabajan, Cantidad de veces que se ha ejercitado
+
+# Aquí es donde hay que tener en cuenta que hay un músculo que abarca dos grupos musculares
+3. Definir objeto grupo muscular:
+	Atributos: Nombre, Lista de musculos que contiene, Cantidad de veces que se ha ejercitado
+
+4. Definir objeto rutina:
+	Atributos: Identificador (A,B,...), Lista de grupos musculares que trabaja, Cantidad de veces que se ha realizado
+
+# Definición de funciones
+
+5. Definición de función que construye la rutina de hoy (Lista de objetos de tipo rutina que se pueden hacer hoy :: RUTINAS):
+	# Obtener la lista de músculos del día anterior
+	6. MUSCULOS_AYER = Valor que se encuentra en la columna Musculos día anterior del df
+	# Crear una variable para contener los ejercicios que no se pueden hacer hoy porque trabajan un músculo trabajado ayer
+	7. EJERCICIOS_VETADOS = set()
+	8. MUSCULOS_QUE_SE_PUEDEN_EJERCITAR_HOY = [] # Lista que estará ordenada dependiendo de la frecuencia
+	9. FRECUENCIA_DE_LAS_RUTINAS = dict() # La llave es el index de la rutina y el valor es la suma de cuantas veces
+										  # se han ejercitado sus grupos musculares 
+	10. RUTINA_COMPLETA_DE_HOY = [] # Esta lista poseerá en orden, los ejercicios a realizar hoy.
+	11. for RUTINAS:
+		12. for rutina.lista_grupos_musculares_que_trabaja:
+			13. for grupo_muscular.musculo:
+				14. ¿El musculo fue entrenado ayer?
+					si -
+					15. Añadir todos los ejercicios que lo trabajan al set EJERCICIOS_VETADOS
+					16. Eliminar el musculo de la lista de musculos de grupo_muscular
+					no - 
+					17. Añadir el músculo a MUSCULOS_QUE_SE_PUEDEN_EJERCITAR_HOY
+	18. Ordenar la lista MUSCULOS_QUE_SE_PUEDEN_EJERCITAR_HOY de menor veces ejercitado a mayor veces ejercitado.
+	# Ahora vamos a dividir las plazas de los ejercicios.
+	# Primero obtenemos un valor numérico para la cantidad de veces que se han ejercitado los grupos musculares que
+	# componen la rutina.
+	19. for RUTINAS:
+		20. for rutina.lista_grupos_musculares_que_trabaja:
+			21. ¿El index de rutina ya existe como llave en el diccionario FRECUENCIA_DE_LAS_RUTINAS?
+			si -
+			22. FRECUENCIA_DE_LAS_RUTINAS[rutina] += Cantidad de veces que el grupo muscular se ha ejercitado.
+			no -
+			23. FRECUENCIA_DE_LAS_RUTINAS[rutina] = Cantidad de veces que el grupo muscular se ha ejercitado.
+	24. Convertir el diccionario FRECUENCIA_DE_LAS_RUTINAS en una lista ordenada de menor a mayor valor.
+	# Ahora empezamos a evaluar la rutina desde aquella cuyos componentes se han ejercitado menos hasta la que más,
+	# esta evaluación iterativa devolverá la lista de ejercicios a hacer dependiendo de cual es más apta.
+	25. for rutina in FRECUENCIA_DE_LAS_RUTINAS_LISTA:
+		26. Copiar la lista rutina.lista_de_grupos_musculares_que_trabaja
+		27. Convertir la lista copiada anteriormente en un set()
+		28. ULTIMO_GRUPO_MUSCULAR_EN_SALIR = ''
+		29. while lista_copiada_anteriormente_set > 0:
+			30. grupo_muscular_a_evaluar = lista_copiada_anteriormente_set.pop()
+			31. Extraer en una nueva lista (En orden), los músculos de grupo_muscular_a_evaluar que se encuentren
+				en MUSCULOS_QUE_SE_PUEDEN_EJERCITAR_HOY
+			32. ¿La lista anterior está vacía?
+				si -
+				# Hay que continuar
+				33. 
+
+# MAIN
+
+5. Crear los objetos ejercicio
+
+6. Crear los objetos musculo
+
+7. Crear los objetos grupo muscular
+
+8. Crear los objetos rutina
+
+# Verificación de que tipo de rutina toca hoy (Tronco superior o inferior - El sistema es dos rutinas de tren 
 superior y una de tren inferior), la sesión de tren inferior se dará en cada sesión múltiplo de 3.
+9. RUTINA_HOY = Número de rutina que aparece en el df
+
+10. RUTINA_HOY += 1
+
+11. ¿La rutina de hoy es múltiplo de 3?
+	Si: Hay que escoger una rutina del tren inferior.
+	4. 
+
+	No. 
+
+
+
+
+
+
+
+
 2. Se escoje la rutina que menos se haya hecho hasta el momento, en caso de haber empate, se hace al azar.
 3.Se filtra a los grupos musculares que menos ejercicio hayan hecho y se escoge aquella rutina que agrupe la mayor 
 cantidad de ellos, si hay varias rutinas empatadas, se escoge a aquella que hay sido hecha menos veces, si aún así 
