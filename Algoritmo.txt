@@ -96,6 +96,12 @@ superior y una de tren inferior), la sesión de tren inferior se dará en cada s
 
 
 
+
+
+
+
+
+
 2. Se escoje la rutina que menos se haya hecho hasta el momento, en caso de haber empate, se hace al azar.
 3.Se filtra a los grupos musculares que menos ejercicio hayan hecho y se escoge aquella rutina que agrupe la mayor 
 cantidad de ellos, si hay varias rutinas empatadas, se escoge a aquella que hay sido hecha menos veces, si aún así 
