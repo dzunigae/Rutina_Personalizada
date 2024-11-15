@@ -71,21 +71,29 @@ if __name__ == "__main__":
         musculo_actual = musculo(nombre_musculo,lista_ejercicios_aprobados,MODELO_DF.iloc[1][nombre_musculo])
         MUSCULOS_LIST.append(musculo_actual)
 
-    # QUEDÉ AQUÍ, HAY QUE CORREGIR LO QUE DICE AHÍ
-
     # xx. Crear los objetos grupo muscular
-    primera_fila_df = MODELO_DF.iloc[0:2]
-    grupo_muscular_ya_creado = []
-    for nombre_musculo in nombres_columnas:
-        grupo_muscular_en_si = primera_fila_df.iloc[0][nombre_musculo].strip(',')
-        for grupo_muscular_en_si_element in grupo_muscular_en_si:
-            if grupo_muscular_en_si_element not in grupo_muscular_ya_creado:
-                # Aquí hay algo por arreglar, la lista no debe ser sólo de los nombres sino del objeto músculo
-                grupo_muscular_actual = grupo_muscular(grupo_muscular_en_si_element,[nombre_musculo],primera_fila_df.iloc[1][nombre_musculo])
+    nombres_musculos = MODELO_DF.columns.to_list()[5:37]
+    grupos_ya_verificados = set()
+    for nombre in nombres_musculos:
+        grupo_en_si = str(MODELO_DF.loc[0,nombre]).split(',')
+        frecuencia = MODELO_DF.loc[1,nombre]
+        for el in grupo_en_si:
+            if el not in grupos_ya_verificados:
+                grupos_ya_verificados.add(el)
+                objeto_encontrado = None
+                for objeto in MUSCULOS_LIST:
+                    if objeto.nombre == nombre:
+                        objeto_encontrado = objeto
+                        break  # Sale del bucle una vez que encuentra el objeto
+                grupo_muscular_actual = grupo_muscular(el,[objeto_encontrado],frecuencia)
                 GRUPOS_MUSCULARES_LIST.append(grupo_muscular_actual)
-                grupo_muscular_ya_creado.append(grupo_muscular_en_si_element)
             else:
-                for elemento in GRUPOS_MUSCULARES_LIST:
-                    if elemento.nombre == grupo_muscular_en_si_element:
-                        elemento.lista_musculos.append(nombre_musculo)
+                for objeto in GRUPOS_MUSCULARES_LIST:
+                    if objeto.nombre == el:
+                        objeto_encontrado = None
+                        for objeto_m in MUSCULOS_LIST:
+                            if objeto_m.nombre == nombre:
+                                objeto_encontrado = objeto_m
+                                break
+                        objeto.lista_musculos.append(objeto_encontrado)
                         break
