@@ -27,16 +27,16 @@ class grupo_muscular:
 
 # 4. Definición objeto rutina
 class rutina:
-    def __init__(self,index,lista_grupos_musculares,veces_realizada):
+    def __init__(self,index,lista_grupos_musculares):
         self.index = index
         self.lista_grupos_musculares = lista_grupos_musculares
-        self.veces_realizada = veces_realizada
 
 # DEFINICIÓN DE VARIABLES GLOBALES
 MODELO = './V1/Modelo_produccion.xlsx'
 EJERCICIOS_LIST = []
 MUSCULOS_LIST = []
 GRUPOS_MUSCULARES_LIST = []
+RUTINAS_LIST = []
 
 # DEFINICIÓN DE FUNCIONES
 
@@ -97,3 +97,38 @@ if __name__ == "__main__":
                                 break
                         objeto.lista_musculos.append(objeto_encontrado)
                         break
+
+    # xx. Crear los objetos tipo Rutina
+    rutinas_index = MODELO_DF.columns.to_list()[50:60]
+    for id in rutinas_index:
+        list_elements_column = list(MODELO_DF[id].dropna().unique())
+        list_grupos_musculares = []
+        for objeto in GRUPOS_MUSCULARES_LIST:
+            if objeto.nombre in list_elements_column:
+                list_grupos_musculares.append(objeto)
+        rutina_actual = rutina(id,list_grupos_musculares)
+        RUTINAS_LIST.append(rutina_actual)
+
+    # xx. Preparar la rutina de hoy:
+    # xx. Recordar que los músculos del abdomen no necesitan periodos de descanso, añadir la variable de excepción
+    # xx. Revisar que músculos se ejercitaron el día anterior y eliminarlos de todas las listas de los grupos musculares    
+    # xx. Verificar si la rutina es de tronco superior o inferior
+    # xx. Eliminar toda referencia al conjunto de grupos musculares que no se trabajará hoy
+    # ALGORITMO ESPECIAL PARA SEPARAR LAS PLAZAS DE LOS EJERCICIOS Y ESCOGER LOS PROPIOS EJERCICIOS
+    # xx. Repetir esto para las 3 plazas de ejercicios
+        # xx. valor_general = principante+intermedio+avanzado
+        # xx. Generar un número aleatorio entre 0 y valor_general
+        # xx. Se escoge el valor de intensidad(principante,intermedio,avanzado) que tenga el menor valor numérico,
+        #     Si el número aleatorio va de 0 al menor valor, se escoge ese menor valor
+        # xx. Hacer lo mismo pero con los siguientes rangos:
+        #     menor valor - valor intermedio
+        #     valor intermedio - mayor valor
+    # LAS PLAZAS YA ESTÁN CREADAS, AHORA A ESCOGER LOS EJERCICIOS
+    # xx. A cada rutina le asignamos un valor dependiendo de la suma de las frecuencias con que hayan sido 
+    # ejercitados sus grupos musculares. (Para priorizar aquellas cuyos grupos musculares se hayan ejercitado menos)
+    # xx. Ordenamos la lista de rutinas desde la de menor valor anterior hasta el mayor
+    # xx. for rutina in lista_rutinas:
+        # xx. lista_grupo_muscular_actual = rutina.lista_grupos_musculares
+        # xx. Verificar si cada grupo muscular de lista_grupo_muscular_actual tiene por lo menos
+
+    # xx. Si el for de rutinas termina sin posibilidad de hacer una rutina hoy, se decreta descanso anticipado.
