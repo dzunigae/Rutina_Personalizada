@@ -109,11 +109,12 @@ if __name__ == "__main__":
         rutina_actual = rutina(id,list_grupos_musculares)
         RUTINAS_LIST.append(rutina_actual)
 
-    # xx. Preparar la rutina de hoy:
+    # PREPARAR LA RUTINA DE HOY
+    # xx. Sumar una unidad al valor de Rutina de hoy, en caso de ser 3, será una rutina de tren inferior, en caso de
+    # ser menor, será una de tren superior, en caso de ser 4, es un día de descanso y se retorna el valor a 0
     # xx. Recordar que los músculos del abdomen no necesitan periodos de descanso, añadir la variable de excepción
-    # xx. Revisar que músculos se ejercitaron el día anterior y eliminarlos de todas las listas de los grupos musculares    
-    # xx. Verificar si la rutina es de tronco superior o inferior
-    # xx. Eliminar toda referencia al conjunto de grupos musculares que no se trabajará hoy
+    # xx. Revisar que músculos están en descanso y eliminarlos de todas las listas de los grupos musculares 
+    # xx. Revisar que ejercicios están relacionados a los músculos en descanso y eliminarlos de las listas de ejercicios de los músculos restantes
     # ALGORITMO ESPECIAL PARA SEPARAR LAS PLAZAS DE LOS EJERCICIOS Y ESCOGER LOS PROPIOS EJERCICIOS
     # xx. Repetir esto para las 3 plazas de ejercicios
         # xx. valor_general = principante+intermedio+avanzado
@@ -123,12 +124,24 @@ if __name__ == "__main__":
         # xx. Hacer lo mismo pero con los siguientes rangos:
         #     menor valor - valor intermedio
         #     valor intermedio - mayor valor
+    # NOTA: Las plazas deben ser listas o tuplas que contengan su id (momento secuencial en el cual saldrá el ejercicio
+    # relacionado), su intensidad y un espacio para poner finalmente el ejercicio que se realizará, inicialmente vacío.
     # LAS PLAZAS YA ESTÁN CREADAS, AHORA A ESCOGER LOS EJERCICIOS
+    # xx. Se ordenan las plazas desde la que tiene mayor intensidad hasta la de menor intensidad
     # xx. A cada rutina le asignamos un valor dependiendo de la suma de las frecuencias con que hayan sido 
     # ejercitados sus grupos musculares. (Para priorizar aquellas cuyos grupos musculares se hayan ejercitado menos)
     # xx. Ordenamos la lista de rutinas desde la de menor valor anterior hasta el mayor
     # xx. for rutina in lista_rutinas:
         # xx. lista_grupo_muscular_actual = rutina.lista_grupos_musculares
-        # xx. Verificar si cada grupo muscular de lista_grupo_muscular_actual tiene por lo menos
+        # xx. Verificar si cada grupo muscular de lista_grupo_muscular_actual tiene por lo menos un músculo libre para entrenar
+        # En caso de que no, se procede a la siguiente iteración.
+        # xx. Se crea una nueva estructura de datos que contiene la siguiente información:
+        # Tuplas con nombre de músculo, ejercicio e intensidad. El objetivo es que estas tuplas vayan siendo obtenidas en un orden específico.
+        # xx. Se ordenan de menor frecuencia a mayor frecuencia todos los músculos presentes en el conjunto de
+        # grupos musculares de la rutina.
+        # xx. Para cada uno de estos músculos, se ordena su lista de ejercicios también de menor a mayor frecuencia,
+        # y se crea la tupla con la información y se añade a la lista con un append
+        # xx. for plaza in plazas_ordenadas:
+            # xx. Se busca la primera tupla que cumpla con el requisito de intensidad de la plaza
 
     # xx. Si el for de rutinas termina sin posibilidad de hacer una rutina hoy, se decreta descanso anticipado.
