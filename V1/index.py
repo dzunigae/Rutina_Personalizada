@@ -136,12 +136,26 @@ if __name__ == "__main__":
         # xx. Verificar si cada grupo muscular de lista_grupo_muscular_actual tiene por lo menos un músculo libre para entrenar
         # En caso de que no, se procede a la siguiente iteración.
         # xx. Se crea una nueva estructura de datos que contiene la siguiente información:
-        # Tuplas con nombre de músculo, ejercicio e intensidad. El objetivo es que estas tuplas vayan siendo obtenidas en un orden específico.
-        # xx. Se ordenan de menor frecuencia a mayor frecuencia todos los músculos presentes en el conjunto de
-        # grupos musculares de la rutina.
-        # xx. Para cada uno de estos músculos, se ordena su lista de ejercicios también de menor a mayor frecuencia,
+        # Tuplas con nombre del grupo muscular, nombre de músculo, ejercicio e intensidad. 
+        # El objetivo es que estas tuplas vayan siendo obtenidas en un orden específico.
+        # xx. Se ordenan de menor frecuencia a mayor frecuencia todos los grupos musculares presentes en la rutina.
+        # xx. Para cada uno de estos grupos musculares, se ordena su lista de músculos también de menor a mayor frecuencia.
+        # xx. Para cada uno de los musculos se ordena de menor a mayor frecuencia sus ejercicios asociados
         # y se crea la tupla con la información y se añade a la lista con un append
         # xx. for plaza in plazas_ordenadas:
             # xx. Se busca la primera tupla que cumpla con el requisito de intensidad de la plaza
-
-    # xx. Si el for de rutinas termina sin posibilidad de hacer una rutina hoy, se decreta descanso anticipado.
+            # xx. Si se encuentra:
+                # xx. La plaza queda asociada al ejercicio en cuestión.
+                # xx. Se da por ejercitado el grupo muscular y se eliminan las tuplas de la lista que tengan ese grupo muscular.
+                # xx. También se eliminan de la estructura de datos de tuplas todas aquellas que repitan el ejercicio que acaba de salir.
+            # xx. Si no se encuentra, se cambia la intensidad de esa plaza a su intensidad inmediantamente menor y se realiza nuevamente la búsqueda.
+            # xx. Si en la intensidad más baja no se encuentra cómo rellenar la plaza, se salta a verificar la siguiente rutina.
+        # xx. Si al final todas las plazas fueron llenadas, se da por concluído el proceso.
+        # xx. Si queda alguna plaza por llenar, verificar si es porque todos los grupos musculares ya fueron sacados de las posibilidades.
+        # En dado caso, se reinicia el proceso para llenar las plazas faltantes.
+    # xx. Si el for de rutinas termina y hay plazas que no fueron llenadas, se declara el día como de descanso anticipado.
+    # xx. Si todas las plazas están llenadas, se reemplazan los músculos a descansar y se actualizan todas las demás variables necesarias.
+    # xx. Se crea un txt con la rutina.
+    # xx. Se da espacio a esperar que la rutina culmine para dar la retroalimentación:
+        # xx. Si la rutina fue hecha satisfactoriamente, se realizan las modificaciones necesarias en las probabilidades de las intensidades.
+        # xx. Si no, se realiza la modificación contraria a las probabilidades para bajar el nivel de la siguiente rutina.
