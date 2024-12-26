@@ -41,6 +41,19 @@ RUTINAS_LIST = []
 
 # DEFINICIÓN DE FUNCIONES
 
+def rellenar_una_plaza(plaz,tgmei):
+    for tupla_element in tgmei:
+        # xx. Si se encuentra:
+        if plaz[1] == tupla_element[3]:
+            # xx. La plaza queda asociada al ejercicio en cuestión.
+            plaz[2] = next(obj for obj in EJERCICIOS_LIST if obj.nombre == tupla_element[2])
+            # xx. Se da por ejercitado el grupo muscular y se eliminan las tuplas de la lista que tengan ese grupo muscular.
+            tgmei = [tupla for tupla in tgmei if tupla_element[0] not in tupla]
+            # xx. También se eliminan de la estructura de datos de tuplas todas aquellas que repitan el ejercicio que acaba de salir.
+            tgmei = [tupla for tupla in tgmei if tupla_element[2] not in tupla]
+            break
+    return tgmei
+
 # MAIN
 
 if __name__ == "__main__":
@@ -123,6 +136,7 @@ if __name__ == "__main__":
     plazas = []
     intensidad_dict = {'Principiante': 1, 'Intermedio': 2, 'Avanzado': 3}
     pares_rutina_frecuencia = dict()
+    lista_frecuencias_de_grupos_musculares_df = pd.DataFrame()
 
     # PREPARAR LA RUTINA DE HOY
     # xx. Sumar una unidad al valor de Rutina de hoy, en caso de ser 2, será una rutina de tren inferior, en caso de
@@ -203,18 +217,62 @@ if __name__ == "__main__":
             # xx. Se crea una nueva estructura de datos que contiene la siguiente información:
             # Tuplas con nombre del grupo muscular, nombre de músculo, ejercicio e intensidad. 
             # El objetivo es que estas tuplas vayan siendo obtenidas en un orden específico.
+            tuplas_gp_mus_ejr_intensidad = []
             # xx. Se ordenan de menor frecuencia a mayor frecuencia todos los grupos musculares presentes en la rutina.
+            lista_frecuencias_de_grupos_musculares_df = MODELO_DF[[objeto.nombre for objeto in lista_grupo_muscular_actual]].iloc[0]
+            tupla_grupo_muscular_frecuencia_ordenada = sorted(list(lista_frecuencias_de_grupos_musculares_df.items()),key=lambda x: x[1])
             # xx. Para cada uno de estos grupos musculares, se ordena su lista de músculos también de menor a mayor frecuencia.
-            # xx. Para cada uno de los musculos se ordena de menor a mayor frecuencia sus ejercicios asociados
-            # y se crea la tupla con la información y se añade a la lista con un append
+            for tupla_gp in tupla_grupo_muscular_frecuencia_ordenada:
+                objeto_gp_musculos_lista = next(obj for obj in GRUPOS_MUSCULARES_LIST if obj.nombre == tupla_gp[0]).lista_musculos
+                lista_frecuencias_de_musculos_df = MODELO_DF[[objeto.nombre for objeto in objeto_gp_musculos_lista]].iloc[1]
+                tupla_musculo_frecuencia_ordenada = sorted(list(lista_frecuencias_de_musculos_df.items()),key=lambda x: x[1])
+                # xx. Para cada uno de los musculos se ordena de menor a mayor frecuencia sus ejercicios asociados
+                for tupla_mus in tupla_musculo_frecuencia_ordenada:
+                    objeto_mus_ejercicios_lista = next(obj for obj in MUSCULOS_LIST if obj.nombre == tupla_mus[0]).lista_ejercicios
+                    ejercicios_frecuencias_series = MODELO_DF.set_index('Ejercicios')['Frecuencia'].loc[[objeto.nombre for objeto in objeto_mus_ejercicios_lista]]
+                    tupla_ejercicio_frecuencia_ordenada = sorted(ejercicios_frecuencias_series.items(),key=lambda x: x[1])
+                    # y se crea la tupla con la información y se añade a la lista con un append
+                    for tupla_ejr in tupla_ejercicio_frecuencia_ordenada:
+                        gp = tupla_gp[0]
+                        mus = tupla_mus[0]
+                        ejr = tupla_ejr[0]
+                        niv = ''
+                        for ejr_nivel in objeto_mus_ejercicios_lista:
+                            if ejr_nivel.nombre == ejr:
+                                niv = ejr_nivel.nivel
+                        if niv == '':
+                            raise ValueError(f'No hay intensidad definida para el ejercicio {ejr}')
+                        tuplas_gp_mus_ejr_intensidad.append((gp,mus,ejr,niv))
+            copia_tuplas_gp_mus_ejr_intensidad = tuplas_gp_mus_ejr_intensidad.copy()
+
+            # RECORDAR QUE PASA CUANDO EN LA ESTRUCTURA CON LAS TUPLAS YA NO HAY EJERCICIOS POSIBLES CUANDO AÚN NO SE
+            # HAN LLENADO TODAS LAS PLAZAS
+
             # xx. for plaza in plazas_ordenadas:
+            for plaza in plazas:
+                print(len(tuplas_gp_mus_ejr_intensidad))
                 # xx. Se busca la primera tupla que cumpla con el requisito de intensidad de la plaza
-                # xx. Si se encuentra:
-                    # xx. La plaza queda asociada al ejercicio en cuestión.
-                    # xx. Se da por ejercitado el grupo muscular y se eliminan las tuplas de la lista que tengan ese grupo muscular.
-                    # xx. También se eliminan de la estructura de datos de tuplas todas aquellas que repitan el ejercicio que acaba de salir.
-                # xx. Si no se encuentra, se cambia la intensidad de esa plaza a su intensidad inmediantamente menor y se realiza nuevamente la búsqueda.
-                # xx. Si en la intensidad más baja no se encuentra cómo rellenar la plaza, se salta a verificar la siguiente rutina.
+                tuplas_gp_mus_ejr_intensidad = rellenar_una_plaza(plaza, tuplas_gp_mus_ejr_intensidad)
+                # xx. Si no se encuentra, se cambia la intensidad de esa plaza a su intensidad inmediatamente menor 
+                # y se realiza nuevamente la búsqueda.
+                # Si en la intensidad más baja no se encuentra cómo rellenar la plaza, se salta a verificar la siguiente rutina.
+                niveles = {'Avanzado': 'Intermedio', 'Intermedio': 'Principiante', 'Principiante': None}
+                while plaza[2] is None:
+                    if plaza[1] == 'Principiante':
+                        saltar_a_la_siguiente = True
+                        break
+                    # Reducir la intensidad al siguiente nivel
+                    plaza[1] = niveles[plaza[1]]
+                    if plaza[1] is None:  # Si ya está en el nivel más bajo, se detiene
+                        saltar_a_la_siguiente = True
+                        break
+                    tuplas_gp_mus_ejr_intensidad = rellenar_una_plaza(plaza, tuplas_gp_mus_ejr_intensidad)
+            if saltar_a_la_siguiente:
+                continue
+            else:
+                break
+        #for plaza in plazas:
+        #    print(plaza[2].nombre)
             # xx. Si al final todas las plazas fueron llenadas, se da por concluído el proceso.
             # xx. Si queda alguna plaza por llenar, verificar si es porque todos los grupos musculares ya fueron sacados de las posibilidades.
             # En dado caso, se reinicia el proceso para llenar las plazas faltantes.
