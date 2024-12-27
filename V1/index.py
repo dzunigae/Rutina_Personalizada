@@ -1,3 +1,6 @@
+from openpyxl import load_workbook
+import tkinter as tk
+from tkinter import messagebox
 import pandas as pd
 import random
 
@@ -38,6 +41,7 @@ EJERCICIOS_LIST = []
 MUSCULOS_LIST = []
 GRUPOS_MUSCULARES_LIST = []
 RUTINAS_LIST = []
+TUPLAS_GP_MUS_EJC_LIST = []
 
 # DEFINICIÓN DE FUNCIONES
 
@@ -51,6 +55,8 @@ def rellenar_una_plaza(plaz,tgmei):
             tgmei = [tupla for tupla in tgmei if tupla_element[0] not in tupla]
             # xx. También se eliminan de la estructura de datos de tuplas todas aquellas que repitan el ejercicio que acaba de salir.
             tgmei = [tupla for tupla in tgmei if tupla_element[2] not in tupla]
+            # xx. Añadir la información de la tupla elegida a la variable global
+            TUPLAS_GP_MUS_EJC_LIST.append(tupla_element)
             break
     return tgmei
 
@@ -201,8 +207,10 @@ if __name__ == "__main__":
         # xx. Ordenamos el dict de rutinas desde la de menor valor anterior hasta el mayor
         rutinas_ordenadas = sorted(pares_rutina_frecuencia.items(), key=lambda item: item[1])
         # xx. for rutina in lista_rutinas:
+        rutina_escogida = None
         for rutina_ordenada in rutinas_ordenadas:
             rutina_actual = [obj for obj in RUTINAS_FILTRADAS if obj.index == rutina_ordenada[0]][0]
+            rutina_escogida = rutina_actual
             # xx. lista_grupo_muscular_actual = rutina.lista_grupos_musculares
             lista_grupo_muscular_actual = rutina_actual.lista_grupos_musculares
             # xx. Verificar si cada grupo muscular de lista_grupo_muscular_actual tiene por lo menos un músculo libre para entrenar
@@ -244,13 +252,8 @@ if __name__ == "__main__":
                             raise ValueError(f'No hay intensidad definida para el ejercicio {ejr}')
                         tuplas_gp_mus_ejr_intensidad.append((gp,mus,ejr,niv))
             copia_tuplas_gp_mus_ejr_intensidad = tuplas_gp_mus_ejr_intensidad.copy()
-
-            # RECORDAR QUE PASA CUANDO EN LA ESTRUCTURA CON LAS TUPLAS YA NO HAY EJERCICIOS POSIBLES CUANDO AÚN NO SE
-            # HAN LLENADO TODAS LAS PLAZAS
-
             # xx. for plaza in plazas_ordenadas:
             for plaza in plazas:
-                print(len(tuplas_gp_mus_ejr_intensidad))
                 # xx. Se busca la primera tupla que cumpla con el requisito de intensidad de la plaza
                 tuplas_gp_mus_ejr_intensidad = rellenar_una_plaza(plaza, tuplas_gp_mus_ejr_intensidad)
                 # xx. Si no se encuentra, se cambia la intensidad de esa plaza a su intensidad inmediatamente menor 
@@ -267,26 +270,156 @@ if __name__ == "__main__":
                         saltar_a_la_siguiente = True
                         break
                     tuplas_gp_mus_ejr_intensidad = rellenar_una_plaza(plaza, tuplas_gp_mus_ejr_intensidad)
+            # xx. Si al final todas las plazas fueron llenadas, se da por concluído el proceso.
+            hay_none = any(sublista[-1] is None for sublista in plazas)
+            if not hay_none:
+                break
+            # xx. Si queda alguna plaza por llenar, verificar si es porque todos los grupos musculares ya fueron sacados de las posibilidades.
+            # En dado caso, se reinicia el proceso para llenar las plazas faltantes.
+            else:
+                # Extraer nombres de las plazas (ignorando None)
+                nombres_a_eliminar = {
+                    plaza[2].nombre for plaza in plazas if plaza[2] is not None
+                }
+                # Filtrar la lista de tuplas
+                copia_tuplas_gp_mus_ejr_intensidad = [
+                    tupla for tupla in copia_tuplas_gp_mus_ejr_intensidad
+                    if tupla[2] not in nombres_a_eliminar
+                ]
+                for plaza in plazas:
+                    if plaza[2] == None:
+                        copia_tuplas_gp_mus_ejr_intensidad = rellenar_una_plaza(plaza, copia_tuplas_gp_mus_ejr_intensidad)
+                        niveles = {'Avanzado': 'Intermedio', 'Intermedio': 'Principiante', 'Principiante': None}
+                        while plaza[2] is None:
+                            if plaza[1] == 'Principiante':
+                                saltar_a_la_siguiente = True
+                                break
+                            # Reducir la intensidad al siguiente nivel
+                            plaza[1] = niveles[plaza[1]]
+                            if plaza[1] is None:  # Si ya está en el nivel más bajo, se detiene
+                                saltar_a_la_siguiente = True
+                                break
+                            copia_tuplas_gp_mus_ejr_intensidad = rellenar_una_plaza(plaza, copia_tuplas_gp_mus_ejr_intensidad)
+            hay_none = any(sublista[-1] is None for sublista in plazas)
+            if not hay_none:
+                break
+            else:
+                saltar_a_la_siguiente = True
             if saltar_a_la_siguiente:
                 continue
             else:
                 break
-        #for plaza in plazas:
-        #    print(plaza[2].nombre)
-            # xx. Si al final todas las plazas fueron llenadas, se da por concluído el proceso.
-            # xx. Si queda alguna plaza por llenar, verificar si es porque todos los grupos musculares ya fueron sacados de las posibilidades.
-            # En dado caso, se reinicia el proceso para llenar las plazas faltantes.
         # xx. Si el for de rutinas termina y hay plazas que no fueron llenadas, se declara el día como de descanso anticipado.
-        # xx. Si todas las plazas están llenadas, se reemplazan los músculos a descansar y se actualizan todas las demás variables necesarias.
-        # xx. Se crea un txt con la rutina.
-        # xx. Se da espacio a esperar que la rutina culmine para dar la retroalimentación:
-            # xx. Si la rutina fue hecha satisfactoriamente, se realizan las modificaciones necesarias en las probabilidades de las intensidades.
-            # xx. Si no, se realiza la modificación contraria a las probabilidades para bajar el nivel de la siguiente rutina.
+        hay_none = any(sublista[-1] is None for sublista in plazas)
+        if hay_none:
+            with open('./V1/rutina.txt','w') as archivo:
+                archivo.write('Descanso anticipado')
+        else:
+            ejercicios_de_hoy = [objeto[2].nombre for objeto in plazas]
+            # xx. Si todas las plazas están llenadas, se añaden los músculos a descansar y se actualizan todas las demás variables necesarias.
+            # Cargar el archivo existente
+            workbook = load_workbook(MODELO)
+            # Seleccionar una hoja de trabajo
+            hoja = workbook["Hoja1"]
+            # xx. Agregar nuevos músculos que estén en descanso
+            # Identificar la última fila con datos en la columna BJ
+            columna_bj = hoja["BJ"]  # Obtiene todas las celdas de la columna BJ
+            ultima_fila = max((celda.row for celda in columna_bj if celda.value is not None), default=0)
+            # Agregar los nuevos valores a la columna BJ
+            for i, valor in enumerate(ejercicios_de_hoy, start=1):
+                hoja.cell(row=ultima_fila + i, column=62, value=valor)  # Columna BJ es la columna 62 (A=1, B=2, ..., BJ=62)
+            # xx. Incrementar la frecuencia de los ejercicios
+            for ejercicio_de_hoy in ejercicios_de_hoy:
+                # Recorrer las filas de la columna A para encontrar el nombre
+                for fila in hoja.iter_rows(min_col=1, max_col=1, values_only=False):  # Recorremos la columna A (columna 1)
+                    celda_nombre = fila[0]  # Primera columna (columna A)
+                    if celda_nombre.value == ejercicio_de_hoy:
+                        fila_numero = celda_nombre.row  # Número de la fila donde se encontró el nombre
+                        celda_e = hoja.cell(row=fila_numero, column=5)  # Columna E es la columna 5
+                        if isinstance(celda_e.value, (int, float)):  # Verificar que sea un número
+                            celda_e.value += 1  # Incrementar el valor en 1
+                        else:
+                            print(f"La celda E{fila_numero} no contiene un número. Se omite.")
+                        break  # Salimos del bucle después de encontrar el nombre
+                else:
+                    print(f"No se encontró el nombre '{ejercicio_de_hoy}' en la columna A.")
+            # xx. Incrementar las frecuencias de los músculos y los grupos musculares
+            grupos_musculares = set([tupla[0] for tupla in TUPLAS_GP_MUS_EJC_LIST])
+            ejercicios = set([tupla[2] for tupla in TUPLAS_GP_MUS_EJC_LIST])
+            musculos = set()
+            for mus_element in MUSCULOS_LIST:
+                lista_de_ejercicios = mus_element.lista_ejercicios
+                for ej in lista_de_ejercicios:
+                    if ej.nombre in ejercicios:
+                        musculos.add(mus_element.nombre)
+            # MUSCULOS
+            # Iterar por las columnas
+            for columna in hoja.iter_cols(min_row=1, max_row=1):  # Iteramos solo la primera fila
+                celda = columna[0]  # Primera fila de la columna actual
+                if celda.value in musculos:  # Si el nombre está en el set
+                    fila_3_celda = hoja.cell(row=3, column=celda.column)  # Obtener celda en fila 3
+                    if isinstance(fila_3_celda.value, (int, float)):  # Verificar si tiene un número
+                        fila_3_celda.value += 1  # Sumar 1
+            # GRUPOS MUSCULARES
+            # Iterar por las columnas
+            for columna in hoja.iter_cols(min_row=1, max_row=1):  # Iteramos solo la primera fila
+                celda = columna[0]  # Primera fila de la columna actual
+                if celda.value in grupos_musculares:  # Si el nombre está en el set
+                    fila_3_celda = hoja.cell(row=2, column=celda.column)  # Obtener celda en fila 3
+                    if isinstance(fila_3_celda.value, (int, float)):  # Verificar si tiene un número
+                        fila_3_celda.value += 1  # Sumar 1
+            # xx. Incrementar el número de la sesión
+            hoja["AO2"] = hoja["AO2"].value + 1
+            # xx. Incrementar el número de la rutina
+            hoja["BI2"] = rutina_de_hoy
+            # xx. Se crea un txt con la rutina.
+            with open('./V1/rutina.txt','w') as archivo:
+                archivo.write(f'Rutina escogida: {rutina_escogida.index}\n')
+                archivo.write('\n')
+                for plaza in plazas:
+                    archivo.write(f'Ejercicio: {plaza[0]}\n')
+                    archivo.write(f'Nombre: {plaza[2].nombre}\n')
+                    archivo.write(f'Nivel: {plaza[1]}\n')
+                    archivo.write(f'Página: {plaza[2].pagina}\n')
+                    archivo.write(f'\n')
+            # xx. Se da espacio a esperar que la rutina culmine para dar la retroalimentación:
+            # Crear la ventana principal (no se mostrará)
+            root = tk.Tk()
+            root.withdraw()  # Ocultar la ventana principal
+            niveles_presentes = set([objeto[1] for objeto in plazas])
+            # Mostrar un cuadro de diálogo de tipo 'Sí/No'
+            respuesta = messagebox.askyesno("Alerta", "¿Rutina finalizada exitosamente?")
+            if respuesta:
+                # xx. Si la rutina fue hecha satisfactoriamente, se realizan las modificaciones necesarias en las probabilidades de las intensidades.
+                if 'Avanzado' in niveles_presentes:
+                    hoja["AN2"] = hoja["AN2"].value + 1
+                elif 'Intermedio' in niveles_presentes:
+                    hoja["AN2"] = hoja["AN2"].value + 1
+                elif 'Principiante' in niveles_presentes:
+                    hoja["AM2"] = hoja["AM2"].value + 1
+            else:
+                # xx. Si no, se realiza la modificación contraria a las probabilidades para bajar el nivel de la siguiente rutina.
+                if 'Avanzado' in niveles_presentes:
+                    hoja["AN2"] = hoja["AN2"].value - 1
+                elif 'Intermedio' in niveles_presentes:
+                    hoja["AN2"] = hoja["AN2"].value - 1
+                elif 'Principiante' in niveles_presentes:
+                    hoja["AM2"] = hoja["AM2"].value - 1
+            # xx. Guardar los cambios
+            workbook.save(MODELO)
     # Opción de día de descanso
     else:
-        pass
+        # Cargar el archivo existente
+        workbook = load_workbook(MODELO)
+        # Seleccionar una hoja de trabajo
+        hoja = workbook["Hoja1"]
         # xx. Vaciar la columna de músculos en descanso
+        # Recorrer las filas desde la fila inicial hacia abajo
+        for fila in range(2, hoja.max_row + 1):
+            # Vaciar el contenido de la celda
+            hoja[f'BJ{fila}'] = None
         # xx. Actualizar la variable de rutina de hoy
-
-
-#print([objeto.index for objeto in RUTINAS_FILTRADAS])
+        hoja["BI2"] = 0
+        workbook.save(MODELO)
+        with open('./V1/rutina.txt','w') as archivo:
+            archivo.write('Descanso anticipado')
