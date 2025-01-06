@@ -317,17 +317,29 @@ if __name__ == "__main__":
         else:
             ejercicios_de_hoy = [objeto[2].nombre for objeto in plazas]
             # xx. Si todas las plazas están llenadas, se añaden los músculos a descansar y se actualizan todas las demás variables necesarias.
+            musculos_de_hoy = []
             # Cargar el archivo existente
             workbook = load_workbook(MODELO)
             # Seleccionar una hoja de trabajo
             hoja = workbook["Hoja1"]
             # xx. Agregar nuevos músculos que estén en descanso
             # Identificar la última fila con datos en la columna BJ
-            columna_bj = hoja["BJ"]  # Obtiene todas las celdas de la columna BJ
-            ultima_fila = max((celda.row for celda in columna_bj if celda.value is not None), default=0)
+            columna_BJ = hoja["BJ"]  # Obtiene todas las celdas de la columna BJ
+            ultima_fila_BJ = max((celda.row for celda in columna_BJ if celda.value is not None), default=0)
+            # xx. Rellenar la lista con los músculos ejercitados hoy
+            columna_A = hoja["A"]  # Obtiene todas las celdas de la columna A
+            ultima_fila_A = max((celda.row for celda in columna_A if celda.value is not None), default=0)
+            for fila in range(1,ultima_fila_A+1):
+                if hoja[f"A{fila}"].value in ejercicios_de_hoy:
+                    fila_a_evaluar = hoja[fila]
+                    ultima_columna = max((celda.column for celda in fila_a_evaluar if celda.value is not None), default=0)
+                    for columna in range(1,ultima_columna+1):
+                        celda_especifica = hoja.cell(row=fila, column=columna)
+                        if celda_especifica.value == 'x' or celda_especifica.value == 'X':
+                            musculos_de_hoy.append(hoja.cell(row=1, column=columna).value)
             # Agregar los nuevos valores a la columna BJ
-            for i, valor in enumerate(ejercicios_de_hoy, start=1):
-                hoja.cell(row=ultima_fila + i, column=62, value=valor)  # Columna BJ es la columna 62 (A=1, B=2, ..., BJ=62)
+            for i, valor in enumerate(musculos_de_hoy, start=1):
+                hoja.cell(row=ultima_fila_BJ + i, column=62, value=valor)  # Columna BJ es la columna 62 (A=1, B=2, ..., BJ=62)
             # xx. Incrementar la frecuencia de los ejercicios
             for ejercicio_de_hoy in ejercicios_de_hoy:
                 # Recorrer las filas de la columna A para encontrar el nombre
@@ -422,4 +434,4 @@ if __name__ == "__main__":
         hoja["BI2"] = 0
         workbook.save(MODELO)
         with open('./V1/rutina.txt','w') as archivo:
-            archivo.write('Descanso anticipado')
+            archivo.write('Día de descanso')
