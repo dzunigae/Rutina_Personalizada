@@ -3,6 +3,19 @@ import tkinter as tk
 from tkinter import messagebox
 import pandas as pd
 import random
+from pathlib import Path
+
+# BUSCAR ASSETS
+
+def encontrar_rutina():
+    documentos = Path.home() / "OneDrive" / "Documentos"  # funciona en Windows moderno
+    # alternativa segura: Path.home() / "OneDrive" / "Documents"
+
+    for ruta in documentos.rglob("Rutina de ejercicio"):
+        if ruta.is_dir():
+            return ruta
+
+    raise FileNotFoundError("No se encontró la carpeta 'Rutina de ejercicio'")
 
 # DEFINICIÓN DE OBJETOS
 
@@ -36,12 +49,13 @@ class rutina:
         self.lista_grupos_musculares = lista_grupos_musculares
 
 # DEFINICIÓN DE VARIABLES GLOBALES
-MODELO = './V1/Modelo_produccion.xlsx'
+MODELO = encontrar_rutina() / "Modelo_produccion.xlsx"
 EJERCICIOS_LIST = []
 MUSCULOS_LIST = []
 GRUPOS_MUSCULARES_LIST = []
 RUTINAS_LIST = []
 TUPLAS_GP_MUS_EJC_LIST = []
+rutina_txt = encontrar_rutina() / "rutina.txt"
 
 # DEFINICIÓN DE FUNCIONES
 
@@ -312,7 +326,7 @@ if __name__ == "__main__":
         # xx. Si el for de rutinas termina y hay plazas que no fueron llenadas, se declara el día como de descanso anticipado.
         hay_none = any(sublista[-1] is None for sublista in plazas)
         if hay_none:
-            with open('./V1/rutina.txt','w') as archivo:
+            with open(rutina_txt,'w') as archivo:
                 archivo.write('Descanso anticipado')
         else:
             ejercicios_de_hoy = [objeto[2].nombre for objeto in plazas]
@@ -385,7 +399,7 @@ if __name__ == "__main__":
             # xx. Incrementar el número de la rutina
             hoja["BI2"] = rutina_de_hoy
             # xx. Se crea un txt con la rutina.
-            with open('./V1/rutina.txt','w') as archivo:
+            with open(rutina_txt,'w') as archivo:
                 archivo.write(f'Rutina escogida: {rutina_escogida.index}\n')
                 archivo.write('\n')
                 for plaza in plazas:
@@ -433,5 +447,5 @@ if __name__ == "__main__":
         # xx. Actualizar la variable de rutina de hoy
         hoja["BI2"] = 0
         workbook.save(MODELO)
-        with open('./V1/rutina.txt','w') as archivo:
+        with open(rutina_txt,'w') as archivo:
             archivo.write('Día de descanso')
