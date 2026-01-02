@@ -9,7 +9,6 @@ from pathlib import Path
 
 def encontrar_rutina():
     documentos = Path.home() / "OneDrive" / "Documentos"  # funciona en Windows moderno
-    # alternativa segura: Path.home() / "OneDrive" / "Documents"
 
     for ruta in documentos.rglob("Rutina de ejercicio"):
         if ruta.is_dir():
