@@ -76,6 +76,8 @@ def rellenar_una_plaza(plaz,tgmei):
 # MAIN
 
 if __name__ == "__main__":
+    usar_equipo = messagebox.askyesno("Equipo","¿Deseas incluir ejercicios con equipo?")
+
     # Construir el df necesario del modelo
     MODELO_DF = pd.read_excel(MODELO)
 
@@ -83,8 +85,10 @@ if __name__ == "__main__":
     for i in range(len(MODELO_DF)):
         fila_a_revisar = MODELO_DF.iloc[i]
         if not pd.isna(fila_a_revisar['Ejercicios']):
-            ejercicio_actual = ejercicio(fila_a_revisar['Ejercicios'],fila_a_revisar['Nivel'],fila_a_revisar['Equipo'],fila_a_revisar['Página'],fila_a_revisar['Frecuencia'])
-            EJERCICIOS_LIST.append(ejercicio_actual)
+            # Filtro por equipo
+            if usar_equipo or fila_a_revisar['Equipo'] == "No":
+                ejercicio_actual = ejercicio(fila_a_revisar['Ejercicios'],fila_a_revisar['Nivel'],fila_a_revisar['Equipo'],fila_a_revisar['Página'],fila_a_revisar['Frecuencia'])
+                EJERCICIOS_LIST.append(ejercicio_actual)
     
     # xx. Crear los objetos musculo
     nombres_columnas = MODELO_DF.columns.to_list()[5:37]
