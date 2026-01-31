@@ -1,0 +1,2 @@
+Cuando la rutina da "Descanso anticipado", no se resetean los ejercicios y por lo tanto el programa no se puede usar hasta
+borrar la lista manualmente.
