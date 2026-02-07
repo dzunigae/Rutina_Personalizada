@@ -146,7 +146,7 @@ if __name__ == "__main__":
     diccionario_de_rutinas_por_valor = {
         0:['A','B','C','D','E','F','G','H'],
         1:['A','B','C','D','E','F','G','H'],
-        2:['I','J'],
+        2:['I','J','K','L','M','N','O'],
         3:'Descanso'
     }
     musculos_de_abdomen_excepcion_de_descanso = set() # Sólo los nombres, no todo el objeto
