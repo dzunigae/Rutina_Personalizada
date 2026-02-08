@@ -341,7 +341,7 @@ if __name__ == "__main__":
             hoja = workbook["Hoja1"]
             # xx. Agregar nuevos músculos que estén en descanso
             # Identificar la última fila con datos en la columna BJ
-            columna_BJ = hoja["BJ"]  # Obtiene todas las celdas de la columna BJ
+            columna_BJ = hoja["BO"]  # Obtiene todas las celdas de la columna BO
             ultima_fila_BJ = max((celda.row for celda in columna_BJ if celda.value is not None), default=0)
             # xx. Rellenar la lista con los músculos ejercitados hoy
             columna_A = hoja["A"]  # Obtiene todas las celdas de la columna A
@@ -400,7 +400,7 @@ if __name__ == "__main__":
             # xx. Incrementar el número de la sesión
             hoja["AO2"] = hoja["AO2"].value + 1
             # xx. Incrementar el número de la rutina
-            hoja["BI2"] = rutina_de_hoy
+            hoja["BN2"] = rutina_de_hoy
             # xx. Se crea un txt con la rutina.
             with open(rutina_txt,'w') as archivo:
                 archivo.write(f'Rutina escogida: {rutina_escogida.index}\n')
@@ -446,9 +446,9 @@ if __name__ == "__main__":
         # Recorrer las filas desde la fila inicial hacia abajo
         for fila in range(2, hoja.max_row + 1):
             # Vaciar el contenido de la celda
-            hoja[f'BJ{fila}'] = None
+            hoja[f'BO{fila}'] = None
         # xx. Actualizar la variable de rutina de hoy
-        hoja["BI2"] = 0
+        hoja["BN2"] = 0
         workbook.save(MODELO)
         with open(rutina_txt,'w') as archivo:
             archivo.write('Día de descanso')
