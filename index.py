@@ -329,6 +329,18 @@ if __name__ == "__main__":
         # xx. Si el for de rutinas termina y hay plazas que no fueron llenadas, se declara el día como de descanso anticipado.
         hay_none = any(sublista[-1] is None for sublista in plazas)
         if hay_none:
+            # Cargar el archivo existente
+            workbook = load_workbook(MODELO)
+            # Seleccionar una hoja de trabajo
+            hoja = workbook["Hoja1"]
+            # xx. Vaciar la columna de músculos en descanso
+            # Recorrer las filas desde la fila inicial hacia abajo
+            for fila in range(2, hoja.max_row + 1):
+                # Vaciar el contenido de la celda
+                hoja[f'BO{fila}'] = None
+            # xx. Actualizar la variable de rutina de hoy
+            hoja["BN2"] = 0
+            workbook.save(MODELO)
             with open(rutina_txt,'w') as archivo:
                 archivo.write('Descanso anticipado')
         else:
@@ -356,7 +368,7 @@ if __name__ == "__main__":
                             musculos_de_hoy.append(hoja.cell(row=1, column=columna).value)
             # Agregar los nuevos valores a la columna BJ
             for i, valor in enumerate(musculos_de_hoy, start=1):
-                hoja.cell(row=ultima_fila_BJ + i, column=62, value=valor)  # Columna BJ es la columna 62 (A=1, B=2, ..., BJ=62)
+                hoja.cell(row=ultima_fila_BJ + i, column=67, value=valor)  # Columna BJ es la columna 62 (A=1, B=2, ..., BJ=62)
             # xx. Incrementar la frecuencia de los ejercicios
             for ejercicio_de_hoy in ejercicios_de_hoy:
                 # Recorrer las filas de la columna A para encontrar el nombre
